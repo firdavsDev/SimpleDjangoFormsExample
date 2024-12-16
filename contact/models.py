@@ -30,6 +30,7 @@ class Contact(models.Model):
     )
     email = models.EmailField(null=True, blank=True)
     message = models.TextField()
+    verification_code = models.CharField(max_length=5, verbose_name="verification_code", null=True)
     is_answered = models.BooleanField(default=False)
 
     def __str__(self):
@@ -41,7 +42,7 @@ class Contact(models.Model):
 
 
 class ContactAnswer(models.Model):
-    contact = models.OneToOneField(Contact, on_delete=models.CASCADE)
+    contact = models.OneToOneField(Contact, on_delete=models.CASCADE, verbose_name="answer")
     answer = models.TextField()
 
     def __str__(self):

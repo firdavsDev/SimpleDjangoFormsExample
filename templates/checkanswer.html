@@ -40,24 +40,13 @@
     {% endif %}
     <!-- end django form errors -->
 
-
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-8">
                 <div class="card">
-                    <div class="card-header">
-
-                        <!-- search input form -->
-                        <form action="#" method="get" class="d-flex">
-                            <!-- <input name="search" type="text" class="form-control" placeholder="Search"> -->
-                            {{ search_form }}
-                            <button type="submit" class="btn btn-primary">Search</button>
-                        </form>
-                        <!-- end search input form -->
-                        <h2>Contact Us</h2>
-                    </div>
                     <div class="card-body">
-                        <form action="{% url 'contact:contact_form' %}" method="post">
+
+                        <form action="{% url 'contact:check_answer' %}" method="post">
                             {% csrf_token %}
 
                             <!-- <div class="mb-3">
@@ -65,11 +54,12 @@
                                 <input type="text" class="form-control" id="name" name="name" value="{{ form.name.value }}">
                             </div> -->
 
-                            {{ form.as_p }}
-                            <button class="btn btn-primary" type="submit">Send</button>
+                            {{ answer_form.as_p }}
+                            <button class="btn btn-primary" type="submit">Check</button>
                         </form>
+                        <h2>Answer: </h2>
+                        {{ answer }}
                     </div>
-                    <a href="{% url 'contact:check_answer' %}">Check answer</a>
                 </div>
             </div>
         </div>
