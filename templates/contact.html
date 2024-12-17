@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
+{% load crispy_forms_field %}
+{% load crispy_forms_tags %}
 
 <head>
     <meta charset="UTF-8">
@@ -50,7 +52,9 @@
                         <!-- search input form -->
                         <form action="#" method="get" class="d-flex">
                             <!-- <input name="search" type="text" class="form-control" placeholder="Search"> -->
-                            {{ search_form }}
+                            <!-- {{ search_form }} -->
+                            {{ search_form|crispy }}
+
                             <button type="submit" class="btn btn-primary">Search</button>
                         </form>
                         <!-- end search input form -->
@@ -65,8 +69,9 @@
                                 <input type="text" class="form-control" id="name" name="name" value="{{ form.name.value }}">
                             </div> -->
 
-                            {{ form.as_p }}
+                            {{ form|crispy }}
                             <button class="btn btn-primary" type="submit">Send</button>
+
                         </form>
                     </div>
                     <a href="{% url 'contact:check_answer' %}">Check answer</a>

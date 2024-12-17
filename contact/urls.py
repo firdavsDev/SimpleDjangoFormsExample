@@ -9,4 +9,5 @@ urlpatterns = [
     # path("", views.contact_form_class, name="contact_form"),
     path("", views.contact_form_model_class, name="contact_form"),
     path("answer/", views.check_answer, name="check_answer"),
+    path("address/", views.contact_inline_formset, name="address_form"),
 ]

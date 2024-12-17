@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import inlineformset_factory
 
-from .models import Contact, Region, ContactAnswer
+from .models import Address, Contact, ContactAnswer, Region
 
 
 class SearchForm(forms.Form):
@@ -35,7 +36,7 @@ class ContactForm(forms.Form):
             raise forms.ValidationError(
                 "Phone number must start with +998 and have 13 digits."
             )
-        
+
     # save data to the database
     def save(self):
         name = self.cleaned_data["name"]
@@ -51,14 +52,6 @@ class ContactForm(forms.Form):
 
 
 class ContactFormModel(forms.ModelForm):
-    jins = forms.ChoiceField(
-        choices=[("erkak", "Erkak"), ("ayol", "Ayol")], widget=forms.RadioSelect
-    )
-    region = forms.ModelChoiceField(
-        queryset=Region.objects.filter(is_active=True),
-        empty_label="Select region",
-        widget=forms.Select(attrs={"class": "form-select"}),
-    )
 
     # def clean(self):
     #     # for validation of all fields
@@ -72,7 +65,7 @@ class ContactFormModel(forms.ModelForm):
                 "Phone number must start with +998 and have 13 digits."
             )
         return phone
-    
+
     def save(self):
         name = self.cleaned_data["name"]
         phone = self.cleaned_data["phone"]
@@ -95,19 +88,20 @@ class ContactFormModel(forms.ModelForm):
             "phone": "Your Phone",
             "message": "Your Message",
         }
+        # if u install crispy forms u dont need to write widgets
         widgets = {
             "name": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter your name"}
             ),
             "email": forms.EmailInput(
                 attrs={"class": "form-control", "placeholder": "Enter your email"}
-                ),
+            ),
             "phone": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Enter your phone"}
-                ),
+            ),
             "message": forms.Textarea(
                 attrs={"class": "form-control", "placeholder": "Enter your message"}
-                ),
+            ),
         }
         error_css_class = "danger"
 
@@ -136,7 +130,7 @@ class ContactFormModel(forms.ModelForm):
         # }
         # localized_fields = "__all__"
         # required_css_class = "required"
-   
+
 
 class CheckAnswerForm(forms.Form):
     verification_code = forms.CharField(
@@ -149,8 +143,29 @@ class CheckAnswerForm(forms.Form):
         try:
             contact_obj = Contact.objects.get(verification_code=verification_code)
             if contact_obj.is_answered:
-                answer = ContactAnswer.objects.get(contact__verification_code=verification_code)
+                answer = ContactAnswer.objects.get(
+                    # contact__verification_code=verification_code
+                    contact=contact_obj
+                )
                 return answer.answer
             return "Please wait!"
-        except:
+        except Contact.DoesNotExist:
             return "This verification code is not active! Please check!"
+        except Exception as e:
+            return e
+
+
+class AddressForm(forms.ModelForm):
+
+    class Meta:
+        model = Address
+        exclude = ["is_active"]
+
+
+AddressFormSet = inlineformset_factory(
+    Contact,
+    Address,
+    form=AddressForm,
+    extra=1,  # One blank form initially
+    can_delete=True,  # Allow users to delete an address
+)

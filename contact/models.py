@@ -23,14 +23,16 @@ class Region(models.Model):
 
 class Contact(models.Model):
     # code = models.CharField(max_length=10, unique=True)
-    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
+
     name = models.CharField(max_length=100, verbose_name="Full name")
     phone = models.CharField(
         max_length=15, validators=[phone_validator], verbose_name="Phone number"
     )
     email = models.EmailField(null=True, blank=True)
     message = models.TextField()
-    verification_code = models.CharField(max_length=5, verbose_name="verification_code", null=True)
+    verification_code = models.CharField(
+        max_length=5, verbose_name="verification_code", null=True
+    )
     is_answered = models.BooleanField(default=False)
 
     def __str__(self):
@@ -41,8 +43,28 @@ class Contact(models.Model):
         verbose_name_plural = "Contacts"
 
 
+class Address(models.Model):
+    contact = models.ForeignKey(
+        Contact, on_delete=models.CASCADE, related_name="addresses"
+    )
+    region = models.ForeignKey(Region, on_delete=models.CASCADE, null=True)
+    district = models.CharField(max_length=100)
+    street = models.CharField(max_length=100)
+    house = models.CharField(max_length=100)
+    is_active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.region} - {self.district} - {self.street} - {self.house}"
+
+    class Meta:
+        verbose_name = "Address"
+        verbose_name_plural = "Addresses"
+
+
 class ContactAnswer(models.Model):
-    contact = models.OneToOneField(Contact, on_delete=models.CASCADE, verbose_name="answer")
+    contact = models.OneToOneField(
+        Contact, on_delete=models.CASCADE, verbose_name="answer"
+    )
     answer = models.TextField()
 
     def __str__(self):
